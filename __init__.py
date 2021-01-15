@@ -204,6 +204,12 @@ class openHABSkill(MycroftSkill):
 		command = message.data.get('Command')
 		messageItem = message.data.get('Item')
 
+		openhab_command = command
+		if command == 'an':
+			openhab_command = 'on'
+		elif command == 'aus':
+			openhab_command = 'off'
+
 		#We have to find the item to update from our dictionaries
 		self.lightingSwitchableItemsDic = dict()
 		self.lightingSwitchableItemsDic.update(self.lightingItemsDic)
@@ -212,10 +218,10 @@ class openHABSkill(MycroftSkill):
 		ohItem = self.findItemName(self.lightingSwitchableItemsDic, messageItem)
 
 		if ohItem != None:
-			if (command != "on") and (command != "off"):
+			if (openhab_command != "on") and (openhab_command != "off"):
 				self.speak_dialog('ErrorDialog')
 			else:
-				statusCode = self.sendCommandToItem(ohItem, command.upper())
+				statusCode = self.sendCommandToItem(ohItem, openhab_command.upper())
 				if statusCode == 200:
 					self.speak_dialog('StatusOnOff', {'command': command, 'item': messageItem})
 				elif statusCode == 404:
